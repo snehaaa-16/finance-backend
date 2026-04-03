@@ -1,5 +1,6 @@
 package com.zorvyn.finance.controller;
 
+import com.zorvyn.finance.dto.request.LoginRequest;
 import com.zorvyn.finance.dto.request.RegisterRequest;
 import com.zorvyn.finance.service.interfaces.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -15,5 +16,10 @@ public class AuthController {
     @PostMapping("/register")
     public String register(@RequestBody RegisterRequest request) {
         return authService.register(request);
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestBody LoginRequest request) {
+        return authService.login(request);
     }
 }
