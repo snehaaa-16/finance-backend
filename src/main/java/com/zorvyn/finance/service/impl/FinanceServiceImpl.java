@@ -3,6 +3,8 @@ package com.zorvyn.finance.service.impl;
 import com.zorvyn.finance.dto.request.RecordRequest;
 import com.zorvyn.finance.dto.response.RecordResponse;
 import com.zorvyn.finance.entity.FinancialRecord;
+import com.zorvyn.finance.enums.Category;
+import com.zorvyn.finance.enums.RecordType;
 import com.zorvyn.finance.repository.FinancialRecordRepository;
 import com.zorvyn.finance.service.interfaces.FinanceService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -51,6 +55,42 @@ public class FinanceServiceImpl implements FinanceService {
         );
 
         Page<FinancialRecord> recordPage = recordRepository.findAll(pageable);
+
+        return recordPage.map(record -> RecordResponse.builder()
+                .id(record.getId())
+                .amount(record.getAmount().doubleValue())
+                .type(record.getType())
+                .category(record.getCategory())
+                .date(record.getDate())
+                .notes(record.getNotes())
+                .build());
+    }
+
+    @Override
+    public Page<RecordResponse> getRecordsWithFilters(
+            RecordType type,
+            Category category,
+            LocalDate startDate,
+            LocalDate endDate,
+            int page,
+            int size,
+            String sortBy
+    ) {
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(sortBy).descending()
+        );
+
+        if (startDate == null) {
+            startDate = LocalDate.of(1970, 1, 1);
+        }
+        if (endDate == null) {
+            endDate = LocalDate.now();
+        }
+
+        Page<FinancialRecord> recordPage =
+                recordRepository.findWithFilters(type, category, startDate, endDate, pageable);
 
         return recordPage.map(record -> RecordResponse.builder()
                 .id(record.getId())
