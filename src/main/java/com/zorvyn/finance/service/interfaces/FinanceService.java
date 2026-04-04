@@ -21,4 +21,5 @@ public interface FinanceService {
             int size,
             String sortBy
     );
+    RecordResponse updateRecord(Long id, RecordRequest request);
 }

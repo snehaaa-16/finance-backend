@@ -101,4 +101,28 @@ public class FinanceServiceImpl implements FinanceService {
                 .notes(record.getNotes())
                 .build());
     }
+
+    @Override
+    public RecordResponse updateRecord(Long id, RecordRequest request) {
+
+        FinancialRecord record = recordRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Record not found"));
+
+        record.setAmount(java.math.BigDecimal.valueOf(request.getAmount()));
+        record.setType(request.getType());
+        record.setCategory(request.getCategory());
+        record.setDate(request.getDate());
+        record.setNotes(request.getNotes());
+
+        recordRepository.save(record);
+
+        return RecordResponse.builder()
+                .id(record.getId())
+                .amount(record.getAmount().doubleValue())
+                .type(record.getType())
+                .category(record.getCategory())
+                .date(record.getDate())
+                .notes(record.getNotes())
+                .build();
+    }
 }

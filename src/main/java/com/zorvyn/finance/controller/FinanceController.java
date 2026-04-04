@@ -48,4 +48,12 @@ public class FinanceController {
                 type, category, startDate, endDate, page, size, sortBy
         );
     }
+
+    @PutMapping("/{id}")
+    public RecordResponse update(
+            @PathVariable Long id,
+            @RequestBody RecordRequest request
+    ) {
+        return financeService.updateRecord(id, request);
+    }
 }
