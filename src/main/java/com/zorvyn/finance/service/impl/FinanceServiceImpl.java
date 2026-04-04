@@ -6,6 +6,10 @@ import com.zorvyn.finance.entity.FinancialRecord;
 import com.zorvyn.finance.repository.FinancialRecordRepository;
 import com.zorvyn.finance.service.interfaces.FinanceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,5 +39,26 @@ public class FinanceServiceImpl implements FinanceService {
                 .date(record.getDate())
                 .notes(record.getNotes())
                 .build();
+    }
+
+    @Override
+    public Page<RecordResponse> getRecords(int page, int size, String sortBy) {
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(sortBy).descending()
+        );
+
+        Page<FinancialRecord> recordPage = recordRepository.findAll(pageable);
+
+        return recordPage.map(record -> RecordResponse.builder()
+                .id(record.getId())
+                .amount(record.getAmount().doubleValue())
+                .type(record.getType())
+                .category(record.getCategory())
+                .date(record.getDate())
+                .notes(record.getNotes())
+                .build());
     }
 }
