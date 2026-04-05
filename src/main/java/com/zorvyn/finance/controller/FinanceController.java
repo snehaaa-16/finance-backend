@@ -56,4 +56,10 @@ public class FinanceController {
     ) {
         return financeService.updateRecord(id, request);
     }
+
+    @DeleteMapping("/{id}")
+    public String delete(@PathVariable Long id) {
+        financeService.deleteRecord(id);
+        return "Record deleted successfully";
+    }
 }

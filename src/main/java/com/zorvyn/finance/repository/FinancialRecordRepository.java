@@ -13,9 +13,13 @@ import java.time.LocalDate;
 
 public interface FinancialRecordRepository extends JpaRepository<FinancialRecord, Long> {
 
+    @Query("SELECT r FROM FinancialRecord r WHERE r.deletedAt IS NULL")
+    Page<FinancialRecord> findAllActive(Pageable pageable);
+
     @Query("""
     SELECT r FROM FinancialRecord r
-    WHERE (:type IS NULL OR r.type = :type)
+    WHERE r.deletedAt IS NULL
+    AND (:type IS NULL OR r.type = :type)
     AND (:category IS NULL OR r.category = :category)
     AND r.date >= :startDate
     AND r.date <= :endDate

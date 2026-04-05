@@ -35,7 +35,7 @@ public class FinancialRecord extends BaseEntity {
 
     private String notes;
 
-    // Soft delete
+    @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
     public boolean isDeleted() {

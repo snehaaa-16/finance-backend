@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +55,7 @@ public class FinanceServiceImpl implements FinanceService {
                 Sort.by(sortBy).descending()
         );
 
-        Page<FinancialRecord> recordPage = recordRepository.findAll(pageable);
+        Page<FinancialRecord> recordPage = recordRepository.findAllActive(pageable);
 
         return recordPage.map(record -> RecordResponse.builder()
                 .id(record.getId())
@@ -106,7 +107,8 @@ public class FinanceServiceImpl implements FinanceService {
     public RecordResponse updateRecord(Long id, RecordRequest request) {
 
         FinancialRecord record = recordRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Record not found"));
+                .filter(r -> r.getDeletedAt() == null)
+                .orElseThrow(() -> new RuntimeException("Record not found or deleted"));
 
         record.setAmount(java.math.BigDecimal.valueOf(request.getAmount()));
         record.setType(request.getType());
@@ -124,5 +126,19 @@ public class FinanceServiceImpl implements FinanceService {
                 .date(record.getDate())
                 .notes(record.getNotes())
                 .build();
+    }
+
+    @Override
+    public void deleteRecord(Long id) {
+
+        FinancialRecord record = recordRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Record not found"));
+
+        if (record.getDeletedAt() != null) {
+            throw new RuntimeException("Record already deleted");
+        }
+
+        record.setDeletedAt(LocalDateTime.now());
+        recordRepository.save(record);
     }
 }

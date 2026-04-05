@@ -22,4 +22,5 @@ public interface FinanceService {
             String sortBy
     );
     RecordResponse updateRecord(Long id, RecordRequest request);
+    void deleteRecord(Long id);
 }
