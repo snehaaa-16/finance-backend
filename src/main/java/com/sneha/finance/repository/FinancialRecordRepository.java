@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface FinancialRecordRepository extends JpaRepository<FinancialRecord, Long> {
 
@@ -17,13 +18,13 @@ public interface FinancialRecordRepository extends JpaRepository<FinancialRecord
     Page<FinancialRecord> findAllActive(Pageable pageable);
 
     @Query("""
-    SELECT r FROM FinancialRecord r
-    WHERE r.deletedAt IS NULL
-    AND (:type IS NULL OR r.type = :type)
-    AND (:category IS NULL OR r.category = :category)
-    AND r.date >= :startDate
-    AND r.date <= :endDate
-    """)
+            SELECT r FROM FinancialRecord r
+            WHERE r.deletedAt IS NULL
+            AND (:type IS NULL OR r.type = :type)
+            AND (:category IS NULL OR r.category = :category)
+            AND r.date >= :startDate
+            AND r.date <= :endDate
+            """)
     Page<FinancialRecord> findWithFilters(
             @Param("type") RecordType type,
             @Param("category") Category category,
@@ -31,4 +32,10 @@ public interface FinancialRecordRepository extends JpaRepository<FinancialRecord
             @Param("endDate") LocalDate endDate,
             Pageable pageable
     );
+
+    @Query("""
+            SELECT r FROM FinancialRecord r
+            WHERE r.deletedAt IS NULL
+            """)
+    List<FinancialRecord> findAllActiveList();
 }

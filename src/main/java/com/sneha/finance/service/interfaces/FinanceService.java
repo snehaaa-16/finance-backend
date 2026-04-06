@@ -2,6 +2,7 @@ package com.sneha.finance.service.interfaces;
 
 import com.sneha.finance.dto.request.RecordRequest;
 import com.sneha.finance.dto.response.RecordResponse;
+import com.sneha.finance.dto.response.SummaryResponse;
 import com.sneha.finance.enums.Category;
 import com.sneha.finance.enums.RecordType;
 import org.springframework.data.domain.Page;
@@ -23,4 +24,5 @@ public interface FinanceService {
     );
     RecordResponse updateRecord(Long id, RecordRequest request);
     void deleteRecord(Long id);
+    SummaryResponse getSummary();
 }

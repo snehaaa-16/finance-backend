@@ -7,6 +7,7 @@ import com.sneha.finance.enums.Category;
 import com.sneha.finance.enums.RecordType;
 import com.sneha.finance.repository.FinancialRecordRepository;
 import com.sneha.finance.service.interfaces.FinanceService;
+import com.sneha.finance.dto.response.SummaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -140,5 +142,27 @@ public class FinanceServiceImpl implements FinanceService {
 
         record.setDeletedAt(LocalDateTime.now());
         recordRepository.save(record);
+    }
+
+    @Override
+    public SummaryResponse getSummary() {
+
+        List<FinancialRecord> records = recordRepository.findAllActiveList();
+
+        double income = records.stream()
+                .filter(r -> r.getType() == RecordType.INCOME)
+                .mapToDouble(r -> r.getAmount().doubleValue())
+                .sum();
+
+        double expense = records.stream()
+                .filter(r -> r.getType() == RecordType.EXPENSE)
+                .mapToDouble(r -> r.getAmount().doubleValue())
+                .sum();
+
+        return SummaryResponse.builder()
+                .totalIncome(income)
+                .totalExpense(expense)
+                .balance(income - expense)
+                .build();
     }
 }

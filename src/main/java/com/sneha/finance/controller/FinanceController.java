@@ -2,6 +2,7 @@ package com.sneha.finance.controller;
 
 import com.sneha.finance.dto.request.RecordRequest;
 import com.sneha.finance.dto.response.RecordResponse;
+import com.sneha.finance.dto.response.SummaryResponse;
 import com.sneha.finance.enums.Category;
 import com.sneha.finance.enums.RecordType;
 import com.sneha.finance.service.interfaces.FinanceService;
@@ -61,5 +62,10 @@ public class FinanceController {
     public String delete(@PathVariable Long id) {
         financeService.deleteRecord(id);
         return "Record deleted successfully";
+    }
+
+    @GetMapping("/summary")
+    public SummaryResponse getSummary() {
+        return financeService.getSummary();
     }
 }
