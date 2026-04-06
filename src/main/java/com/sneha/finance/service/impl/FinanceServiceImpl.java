@@ -5,6 +5,8 @@ import com.sneha.finance.dto.response.RecordResponse;
 import com.sneha.finance.entity.FinancialRecord;
 import com.sneha.finance.enums.Category;
 import com.sneha.finance.enums.RecordType;
+import com.sneha.finance.exception.BadRequestException;
+import com.sneha.finance.exception.ResourceNotFoundException;
 import com.sneha.finance.repository.FinancialRecordRepository;
 import com.sneha.finance.service.interfaces.FinanceService;
 import com.sneha.finance.dto.response.SummaryResponse;
@@ -110,7 +112,7 @@ public class FinanceServiceImpl implements FinanceService {
 
         FinancialRecord record = recordRepository.findById(id)
                 .filter(r -> r.getDeletedAt() == null)
-                .orElseThrow(() -> new RuntimeException("Record not found or deleted"));
+                .orElseThrow(() -> new ResourceNotFoundException("Record not found or deleted"));
 
         record.setAmount(java.math.BigDecimal.valueOf(request.getAmount()));
         record.setType(request.getType());
@@ -134,10 +136,10 @@ public class FinanceServiceImpl implements FinanceService {
     public void deleteRecord(Long id) {
 
         FinancialRecord record = recordRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Record not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Record not found"));
 
         if (record.getDeletedAt() != null) {
-            throw new RuntimeException("Record already deleted");
+            throw new BadRequestException("Record already deleted");
         }
 
         record.setDeletedAt(LocalDateTime.now());

@@ -1,6 +1,7 @@
 package com.sneha.finance.controller;
 
 import com.sneha.finance.dto.request.RecordRequest;
+import com.sneha.finance.dto.response.ApiResponse;
 import com.sneha.finance.dto.response.RecordResponse;
 import com.sneha.finance.dto.response.SummaryResponse;
 import com.sneha.finance.enums.Category;
@@ -21,21 +22,29 @@ public class FinanceController {
     private final FinanceService financeService;
 
     @PostMapping
-    public RecordResponse create(@RequestBody RecordRequest request) {
-        return financeService.createRecord(request);
+    public ApiResponse<RecordResponse> create(@RequestBody RecordRequest request) {
+        return ApiResponse.<RecordResponse>builder()
+                .success(true)
+                .data(financeService.createRecord(request))
+                .message("Record created successfully")
+                .build();
     }
 
     @GetMapping
-    public Page<RecordResponse> getAll(
+    public ApiResponse<Page<RecordResponse>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "date") String sortBy
     ) {
-        return financeService.getRecords(page, size, sortBy);
+        return ApiResponse.<Page<RecordResponse>>builder()
+                .success(true)
+                .data(financeService.getRecords(page, size, sortBy))
+                .message("Records fetched successfully")
+                .build();
     }
 
     @GetMapping("/filter")
-    public Page<RecordResponse> filter(
+    public ApiResponse<Page<RecordResponse>> filter(
             @RequestParam(required = false) RecordType type,
             @RequestParam(required = false) Category category,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -44,28 +53,42 @@ public class FinanceController {
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "date") String sortBy
     ) {
-        System.out.println("API HIT");
-        return financeService.getRecordsWithFilters(
-                type, category, startDate, endDate, page, size, sortBy
-        );
+        return ApiResponse.<Page<RecordResponse>>builder()
+                .success(true)
+                .data(financeService.getRecordsWithFilters(
+                        type, category, startDate, endDate, page, size, sortBy))
+                .message("Filtered records fetched successfully")
+                .build();
     }
 
     @PutMapping("/{id}")
-    public RecordResponse update(
+    public ApiResponse<RecordResponse> update(
             @PathVariable Long id,
             @RequestBody RecordRequest request
     ) {
-        return financeService.updateRecord(id, request);
+        return ApiResponse.<RecordResponse>builder()
+                .success(true)
+                .data(financeService.updateRecord(id, request))
+                .message("Record updated successfully")
+                .build();
     }
 
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable Long id) {
+    public ApiResponse<String> delete(@PathVariable Long id) {
         financeService.deleteRecord(id);
-        return "Record deleted successfully";
+        return ApiResponse.<String>builder()
+                .success(true)
+                .data(null)
+                .message("Record deleted successfully")
+                .build();
     }
 
     @GetMapping("/summary")
-    public SummaryResponse getSummary() {
-        return financeService.getSummary();
+    public ApiResponse<SummaryResponse> getSummary() {
+        return ApiResponse.<SummaryResponse>builder()
+                .success(true)
+                .data(financeService.getSummary())
+                .message("Summary fetched successfully")
+                .build();
     }
 }
